@@ -1,7 +1,7 @@
 ---
 title: "Week 2 Exercises"
-author: "Your Name Here"
-date: "May 14, 2022"
+author: "Wanida Ruangsiriluk"
+date: "November 2, 2023"
 output: pdf_document
 ---
 
@@ -36,6 +36,8 @@ You can extract a vector of columns names from a data frame using the colnames()
 
 ```{r}
 # Your code here
+colnames(sales) [1] = "Row.ID"
+str(sales)
 
 ```
 
@@ -49,6 +51,27 @@ How many weeks?
 ```{r}
 # Your code here
 
+sales$Ship.Date <- as.Date(sales$Ship.Date
+                           , format = "%B %d %Y")
+
+sales$Order.Date <- as.Date(sales$Order.Date
+                           , format = "%m/%d/%Y")
+
+recent_order <- min(sales$Order.Date)
+oldest_order <- max(sales$Order.Date)
+
+#number of days between the most recent order and the oldest order
+difftime(oldest_order,recent_order,
+         units = "days")
+
+#number of weeks
+difftime(oldest_order,recent_order,
+         units = "weeks")
+
+#number of years
+time_length(difftime(oldest_order,recent_order), "years")
+
+
 ```
 
 
@@ -57,6 +80,9 @@ What is the average number of days it takes to ship an order?
 
 ```{r}
 # Your code here
+
+mean(sales$Ship.Date - sales$Order.Date)
+
 
 ```
 
@@ -67,6 +93,10 @@ You will need to split the customer name into first and last name segments and t
 
 ```{r}
 # Your code here
+sales$Customer.Name <- tolower(sales$Customer.Name)
+uniq_customer <- unique(sales$Customer.Name)
+
+length(grep(pattern = "bill", uniq_customer))
 
 ```
 
@@ -77,6 +107,11 @@ How many mentions of the word 'table' are there in the Product.Name column?
 ```{r}
 # Your code here
 
+sales$Product.Name <- tolower(sales$Product.Name)
+
+length(grep(pattern = "table", sales$Product.Name))
+
+
 ```
 
 # Exercise 7
@@ -84,6 +119,12 @@ Create a table of counts for each state in the sales data. The counts table shou
 
 ```{r}
 # Your code here
+sales$State <- factor(sales$State)
+levels(sales$State)
+
+statetable <- table(sales$State)
+print(statetable)
+
 
 ```
 
@@ -92,6 +133,12 @@ Create an alphabetically ordered barplot for each sales Category in the State of
 
 ```{r}
 # Your code here
+sales_tx_df = sales[sales$State == "Texas", ]
+sales_tx_df$Category <- factor(sales_tx_df$Category)
+
+barplot(table(sales_tx_df$Category))
+
+
 
 ```
 
@@ -101,6 +148,12 @@ Find the average profit by region.
 
 ```{r}
 # Your code here
+?aggregate
+
+prof_reg <- aggregate(x= sales$Profit, by = list(sales$Region)
+          , FUN = mean)
+setNames(prof_reg, c("Region", "Avg.Profit"))
+
 
 ```
 
@@ -110,6 +163,15 @@ Find the average profit by order year.
 
 ```{r}
 # Your code here
+
+sales$Order.Year <- format(sales$Order.Date, "%Y")
+
+avg_prof_yr <- aggregate(x = sales$Profit, by = list(sales$Order.Year)
+                         , FUN = mean)
+setNames(avg_prof_yr, c("Year", "Avg.Profit"))
+
+
+
 
 ```
 

@@ -14,7 +14,8 @@ x + 2*y == z
 test_vector <- c(1,5,11:22)
 x %in% test_vector | y %in% test_vector | z %in% test_vector
 
+#Need to return the indices, not the actual value, below is the correct way:
 
-logical_vector <- (x == test_vector) | (y == test_vector) | (z == test_vector)
-test_vector[logical_vector]
+which((x == test_vector) | (y == test_vector) | (z == test_vector))
+
 

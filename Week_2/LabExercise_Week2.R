@@ -10,19 +10,26 @@ library(forcats)
 sales <- read.delim("Week_2/Data/sales_pipe.txt"
                     ,stringsAsFactors=FALSE
                     ,sep = "|"
+                   
 )
+
 str(sales)
 colnames(sales) [1] = "Row.ID"
 
 str(sales)
 
-#Ex3 convert Order.ID and Order.Date to date vectors
+#========Ex3 convert Ship.Date and Order.Date to date vectors
 
-str(sales)
-is.Date(sales$Order.Date)
+
 sales$Order.Date <- as.Date(sales$Order.Date
                                 ,format='%m/%d/%Y'
 )
+
+sales$Ship.Date <- as.Date(sales$Ship.Date
+                            ,format='%B %d %Y'
+)
+
+
 
 #??? lubridate convert results to year direction not possible with
 #just subtraction 2 vectors.  Only can convert to days/wks with "difftime"
@@ -30,14 +37,13 @@ oldest_order <- min(sales$Order.Date)
 newest_order <- max(sales$Order.Date)
 
 #change unit of difftime to days, weeks (but no years)
-day_diff <- difftime(newest_order, oldest_order,
+difftime(newest_order, oldest_order,
          units = "days")
-print(day_diff)
+
 
 #for weeks change unit to weeks
-wk_diff <- difftime(newest_order, oldest_order,
+difftime(newest_order, oldest_order,
                      units = "weeks")
-print(wk_diff)
 
 
 # For years, redo with interval and divided by yrs
@@ -46,17 +52,18 @@ day_intv <- interval(newest_order, oldest_order)
 yr_intv <- as.period(day_intv) / years(1)
 print(yr_intv)
 
+
 #If convert to numeric first, that can be done with "duration"
 numdays <- as.numeric(newest_order - oldest_order)
 numdays
-str(numdays)
 
 duration(numdays, "days")
 
+#Or use the time_length and format for number of years
+time_length(difftime(oldest_order,newest_order), "years")
+
 
 # Ex 4==============
-# convert ship date to date category 
-sales$Ship.Date <- mdy(sales$Ship.Date)
 
 # create a vector from Ship Date and Order Date
 ord_date <- sales$Order.Date
@@ -67,43 +74,60 @@ shippingdays <- difftime(shp_date, ord_date,
 
 mean(shippingdays)
 
+
 # Ex 5===========
 #create matrix with customer name only and split into first and last name
+sales$Customer.Name <- tolower(sales$Customer.Name)
 
-cust_firstlast <- stringr::str_split_fixed(string = sales$Customer.Name
+#or use stringr,
+sales$Customer.Name <- str_to_lower(string = sales$Customer.Name
+                                    , locale = "en")
+
+uniq_customer <- unique(sales$Customer.Name)
+
+cust_firstlast <- str_split_fixed(string = uniq_customer
                                            , pattern = " ", n=2)
-colnames(cust_firstlast) = c("first", "last")
 
- #Add each column [, 1] = column1,  back to sales original data frame
+length(which(cust_firstlast == "bill"))
+
+
+
+#DO NOT NEED__Add each column [, 1] = column1,  back to sales original data frame
 sales$Customer.First <- cust_firstlast[ ,1]
 sales$Customer.Last <- cust_firstlast[ ,2] 
 
-#Use string subsetting to call out Bill into a vector
-bill_vector <- str_subset(string = sales$Customer.First, pattern = "Bill", negate = FALSE)
-length(bill_vector)
+
+#--- Fixing------need to pull out 'table', but need to lower case first Ex6====
+sales$Product.Name <- str_to_lower(sales$Product.Name)
+
+#is this counting rows only?
+match_table <- str_match_all(string = sales$Product.Name, pattern = "table")
+length(which(match_table == "table"))
+
+test <- grep(pattern = "table", sales$Product.Name)
+length(test)
 
 
-# DO NOT NEED THIS:  Subsetting Bill into vector, then count length where 
-firstname <- sales$Customer.First == "Bill"
-length(firstname[firstname == TRUE])
+#is this counting occurrences from individual word?
+split_table <- str_split(string = sales$Product.Name, pattern = " ")
 
-
-# Ex6==================
-length(str_subset(string = sales$Sub.Category
-                  , pattern = "Tables"
-                  , negate = FALSE))
+sum(str_count(split_table, pattern = "table"))
 
 
 #  Ex7=================
-# call for unique element in State
+# DO NOT NEED, Factor already call for a unique element in State 
 unique(sales$State)
+
 # change to Factor
 sales$State <- factor(sales$State)
 is.factor(sales$State)
+levels(sales$State)
+str(sales$State)
 
 #Order alphabetical and make a table
 levels(sales$State)
 statetable <- table(sales$State)
+statetable
 
 # Ex 8 ======================
 
@@ -122,10 +146,10 @@ aggregate(x = sales$Profit, by = list(sales$Region), FUN = "mean")
 
 
 # Ex 10======================
-order_date = str_split_fixed(string = sales$Order.Date
-                             , pattern = "-", n=3
-                             )
-sales$Order.Year <- order_date [ ,1] 
+
+#If the Order.Date is already in as.Date format, just pull out into a new
+# column then format out only Year by regex.
+sales$Order.Year <- format(sales$Order.Date, "%Y")
 
 aggregate(x = sales$Profit, by = list(sales$Order.Year), FUN = "mean")
 

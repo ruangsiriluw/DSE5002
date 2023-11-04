@@ -46,7 +46,7 @@ summary(sales_csv)
 str(sales_csv)
 
 ########################### Characters/Strings #############################
-
+library(stringr)
 # Splitting strings to create two new columns
 ## String split fixed will split the product id column into three columns in a matrix by the '-'
 # Call str_split_fixed function, string = dataset_object$column_name, by pattern = "-", into 3 col
@@ -57,7 +57,7 @@ temp_char <- stringr::str_split_fixed(string = sales_csv$Product.ID, pattern='-'
 sales_csv$Product <- paste(temp_char[,1], temp_char[,2],sep='-')
 
 # Our product number is now just the third column of the matrix, paste to existing dataset
-sales_csv$Product.Number <- temp_char[,3]
+sales_csv$Product.Number <- as.integer(temp_char[,3])
 
 # cat = print with a separator
 
@@ -70,10 +70,12 @@ cat(
 
 # print all on a separate line
 
+
+
 ################################### Factors ##################################
 # Check whether Region is a factor & find the unique values. 
 is.factor(sales_csv$Region)
-unique(sales_csv$Region)
+test <- unique(sales_csv$Region) == "West"
 
 # Convert the Region column to a factor and extract the levels
 sales_csv$Region <- factor(sales_csv$Region)
@@ -124,11 +126,14 @@ sales_csv[1:10, 5]
 #This is filtering the rows with First Class so it's to the left of comma (,)
 first_class_df = sales_csv[sales_csv$Ship.Mode=='First Class', ]
 
-# and further subsetting with only city 
+# and further subsetting with only city (returning bulean)
 first_class_df = sales_csv[(sales_csv$Ship.Mode=='First Class') & 
                              (sales_csv$City=='Henderson'), ]
 
 
+sales_csv[1:10,]
+filter <- (sales_csv[(sales_csv$Ship.Mode=='First Class') & 
+                       (sales_csv$City=='Henderson'), ])
 
 
 
