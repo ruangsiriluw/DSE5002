@@ -10,8 +10,8 @@ sales <- sales %>%
          )
 
 #simple bar chart
-ggplot(sales,aes(x=Category)) +
-  geom_bar()
+ggplot(sales) +
+  geom_bar(aes(x=Category,fill=Segment))
 
 #axis labels & title with a custom scale & color
 ggplot(sales,aes(x=Category,fill=Category)) +  #fill by color each Category
@@ -25,7 +25,7 @@ ggplot(sales,aes(x=Category,fill=Category)) +  #fill by color each Category
 #multiple layers, faceting, and adjusting labels
 ggplot(sales) +
   geom_point(aes(x=Sales,y=Profit,color=Discount)) +
-  geom_smooth(method='lm',aes(x=Profit,y=Sales)) +   #linear model = lm
+  geom_smooth(method='lm',aes(x=Profit,y=Sales)) +   #linear model = lm, different aes
   facet_grid(.~Category) +  #break out each category
   scale_y_continuous(labels=scales::dollar_format()) + #add format of y values on axis
   theme(axis.text.x = element_text(angle = 45)) +

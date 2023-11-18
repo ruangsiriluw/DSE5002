@@ -23,8 +23,8 @@ data(fish_encounters)
 head(fish_encounters)
 
 fish_wide <- fish_encounters %>%
-  pivot_wider(names_from = station, values_from = seen)
-head(fish_wide)
+  pivot_wider(names_from = station, values_from = seen) #station = col, values = 'seen' count
+head(fish_wide)   #can add 'values_fill = 0' to replace NA
 
 
 
@@ -52,12 +52,12 @@ head(wide_fish_na)
 sales <- read.csv("Week_4/Data/sales.csv", stringsAsFactors=FALSE)
 
 
-
+#This merge will remove the previous column
 sales <- sales %>%  
   separate(Customer.Name,   # turn a single character into multiple columns without adding to the end
            sep=' ',         # Seperate by a space
-           into=c('First.Name','Last.Name') # seperate into 2 columns First & Last name
-           ,extra='merge')
+           into=c('First.Name','Last.Name') # separate into 2 columns First & Last name
+           ,extra='merge')  # If any extra space, add to the last word (Van Huff)
 head(data.frame(sales$First.Name[1:5],sales$Last.Name[1:5]))
 
 #conversely, we can combine these columns back together

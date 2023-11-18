@@ -1,7 +1,7 @@
 ---
 title: "Week 4 Exercises"
-author: "Your Name Here"
-date: "May 19, 2022"
+author: "Wanida Ruangsiriluk"
+date: "November 17, 2023"
 output: pdf_document
 ---
 
@@ -29,13 +29,13 @@ The data uses the original codes given by the World Health Organization. The col
 https://tidyr.tidyverse.org/reference/who.html
 
 ```{r}
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 
 data(who)
 data(population)
-tail(who)
 
 who <- who %>%
   pivot_longer(
@@ -45,7 +45,6 @@ who <- who %>%
     values_to = 'count'
   )
 
-head(who)
 tail(who)
 
 ```
@@ -57,13 +56,12 @@ tail(who)
 who <- who %>%
   left_join(population, by= c('country', 'year'))
 
-
+tail(who)
 ```
 
 3) Split the age column into two columns, min age and max age. Notice that there is no character separator. Check the documentation with ?separate to understand other ways to separate the age column. Keep in mind that 0 to 14 is coded as 014 (3 characters) and the other age groups are coded with 4 characters. 65 only has two characters, but we will ignore that until the next prolem. 
 
 ```{r}
-?separate
 
 who <- separate(who, col=age, into = c('min_age', 'max_age'), 
          sep = "(?<=\\d)(?=\\d{2}$)", remove = TRUE,
@@ -76,7 +74,8 @@ tail(who, n=10)
 4) Since we ignored the 65+ group in the previous problem we will fix it here. If you examine the data you will notice that 65 was placed into the max_age column and there is no value for min_age for those records. To fix this use mutate() in order to replace the blank value in the min_age column with the value from the max_age column and another mutate to replace the 65 in the max column with an Inf. Be sure to keep the variables as character vectors.  
 
 ```{r}
-#Note that, the looking forward syntax in exercise 3 already put 65+ age in the min_age column, and max as NA.
+#Note that, the 'looking forward' syntax in exercise 3 already put 65+ age 
+#in the min_age column, and max as NA.
 #Below only mutate to replace max_age from NA to Inf
 
 who <- who %>%
@@ -91,8 +90,6 @@ tail(who, n=10)
 *See ?sum for a hint on resolving NA values.*
 
 ```{r}
-# Check how many diagnostic as a factor
-who$diagnostic <- factor(who$diagnostic)
 
 summary_counts <- who %>%
   group_by(diagnostic, gender) %>%
@@ -106,14 +103,24 @@ print(summary_counts)
 6) Now create a plot using ggplot and geom_col where your x axis is gender, your y axis represents the counts, and facet by diagnosis. Be sure to give your plot a title and resolve the axis labels. 
 
 ```{r}
-ggplot(who,aes(x=gender,y = count, fill=diagnostic)) +  
-  geom_col() +
+library(scales)
+
+
+ggplot(who) +  
+  geom_col(aes(x=gender,y = count, fill=diagnostic)) +
   labs(x='Gender',
-       y='Count',
-       title='Number of TB events found per diagnostic') +
-       labs(y = 'Counts') +
-       theme(plot.title = element_text(hjust=0.5)) +
-       facet_grid(.~diagnostic)
+       y='Count (millions)',
+       title='Number of TB events found per diagnostic by gender') +
+       scale_fill_discrete(name = 'Diagnostic: ',
+                    labels = c('extrapulmonary', 'relapse', 
+                      'negative pulmonary smear', 'positive pulmonary smear')) +
+      scale_y_continuous(labels = unit_format(unit = 'M', scale = 1e-6)) +
+      facet_grid(.~diagnostic) +
+      theme(plot.title = element_text(hjust=0.5), legend.position = 'bottom', 
+             legend.text = element_text(size = 10)) +
+      guides(fill = guide_legend(nrow = 2))
+
+
 
 ```
 
@@ -121,24 +128,87 @@ ggplot(who,aes(x=gender,y = count, fill=diagnostic)) +
 
 ```{r}
 # remove NA row, give answer in %
+
+#First, remove NA rows for count and population in a new df called "filter_df"
+filter_df <- filter(who, population !=is.na(population), count !=is.na(count))
+print(filter_df) 
+
+
+pct_df <- filter_df %>%
+  group_by(year, gender, diagnostic) %>%
+  summarise(ratio_pop = sum(count / population)) %>%
+  mutate(pct_pop_format = percent(ratio_pop, scale = 100, accuracy = 0.001))
+print(pct_df)  
+
+
+
+
 ```
 
 8) Create a line plot in ggplot where your x axis contains the year and y axis contains the percent of world population. Facet this plot by diagnosis with each plot stacked vertically. You should have a line for each gender within each facet. Be sure to format your y axis and give your plot a title. 
 
 ```{r}
-# your code here
+
+ggplot(pct_df) +
+  geom_line(aes(x = year, y = ratio_pop, group = gender, color = gender)) +
+  labs(x='Year',
+       y='Percent Population',
+       title='Percent of population per diagnostic through time') +
+  scale_y_continuous(labels = label_percent()) +
+  facet_grid(rows = vars(diagnostic), scales = "free_y") +
+  theme(plot.title = element_text(hjust=0.5))
+
+## Notice the graph of 'rel' diagnostic group has only 1 data point, 
+# so, there is no line on the graph.  Free Y scale for easy visualization.
+
+
 ```
 
 9) Now unite the min and max age variables into a new variable named age_range. Use a '-' as the separator. 
 
 ```{r}
-# your code here
+filter_df <- filter_df %>%
+  unite(col = 'age_range', 'min_age':'max_age', sep ='-')
 
+tail(filter_df)
 ```
 
 10) Find the percentage contribution of each age group by diagnosis. You will first need to find the count of all diagnoses then find the count of all diagnoses by age group. Join the former to the later and calculate the percent of each age group. Plot these as a geom_col where the x axis is the diagnosis, y axis is the percent of total, and faceted by age group. 
 
 ```{r}
-# your code here
+# Total count per diagnostic
+
+ttcount_diag <- filter_df %>%
+  group_by(diagnostic) %>%
+  summarise(ttcount_diag = sum(count))
+
+pct_age <- filter_df %>%
+  left_join(ttcount_diag, by = 'diagnostic') %>%
+  group_by(age_range, diagnostic) %>%
+  summarise(pct_age_diag = sum(count / ttcount_diag))
+
+print(pct_age)
+
+#### Replace '65-Inf' with '65+' for graph label
+library(stringr)
+pct_age$age_range <- str_replace(pct_age$age_range,"65-Inf", "65+")
+
+
+
+#### Load viridis color palettes and change faucet label of '65-Inf' to '65+'
+library(viridis)
+
+ggplot(pct_age) +
+  geom_col(aes(x = diagnostic, y = pct_age_diag, fill = age_range)) +
+  labs(x='Diagnostic',
+       y='Percent of Total Diagnostic',
+       title='Percent of each age group contributed to each diagnostic',
+       fill = 'Age Range (years old)') +
+  scale_y_continuous(labels = label_percent(scale = 100)) +   
+  facet_grid(.~age_range) +
+  theme(plot.title = element_text(hjust=0.5), legend.position = 'bottom',
+       legend.text = element_text(size = 12)) +
+  scale_fill_viridis(discrete = TRUE)
+
 
 ```
