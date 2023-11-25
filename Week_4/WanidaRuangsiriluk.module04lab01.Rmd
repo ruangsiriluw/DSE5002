@@ -176,7 +176,8 @@ tail(filter_df)
 10) Find the percentage contribution of each age group by diagnosis. You will first need to find the count of all diagnoses then find the count of all diagnoses by age group. Join the former to the later and calculate the percent of each age group. Plot these as a geom_col where the x axis is the diagnosis, y axis is the percent of total, and faceted by age group. 
 
 ```{r}
-# Total count per diagnostic
+# Total count per diagnostic and join by diagnostic to find % contribution
+# by age_range
 
 ttcount_diag <- filter_df %>%
   group_by(diagnostic) %>%
@@ -195,7 +196,7 @@ pct_age$age_range <- str_replace(pct_age$age_range,"65-Inf", "65+")
 
 
 
-#### Load viridis color palettes and change faucet label of '65-Inf' to '65+'
+#### Load viridis color palettes and plot
 library(viridis)
 
 ggplot(pct_age) +
