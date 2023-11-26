@@ -19,18 +19,6 @@ project1_df <- project1_df %>%
 str(project1_df)
 
 
-###### sub-setting df for 'US-location' only into another df
-us_df <- subset(project1_df, company_location == "US")
-
-
-#######  Making quantile function to be used in multiple tables ###########
-
-cal_quant <- function(x) {
-  quantiles <- quantile(x, c(0.25, 0.5, 0.75))
-  return(quantiles)
-}
-
-
 ############################ SUMMARY TABLES ###############################
 library(tidyr)
 
@@ -350,13 +338,13 @@ adjust_for_inflation(wages, 2010, to_date = 2016, country = 'US',
                      countries_dataframe = countries_dataframe, 
                      inflation_dataframe = inflation_dataframe)
 
-salary_infl <- us_df %>%
-  adjust_for_inflation(salary_in_usd, 2010, to_date = 2016, country = 'US',
+salary_infl <- salary_ft_df %>%
+  adjust_for_inflation(salary_in_usd, 2020, to_date = 2023, country = 'US',
                        countries_dataframe = countries_dataframe, 
                        inflation_dataframe = inflation_dataframe)
 
 
-
+#///////////////////////////////DO NOT NEED///////////////////
 #//////////////////////////////////////////////////////////////////////////
 # This would not grab other columns
 # us_title_qt <- aggregate(us_df$salary_in_usd, by = list(us_df$job_title, us_df$experience_level)
@@ -367,3 +355,16 @@ salary_infl <- us_df %>%
 # colnames(us_title_qt_df) <- c('job_title', 'experience_level',
 #                              'quantile_25%', 'median' ,'quantile_75%')
 #//////////////////////////////////////////////////////////////////////////
+
+###### sub-setting df for 'US-location' only into another df
+us_df <- subset(project1_df, company_location == "US")
+
+
+#######  Making quantile function to be used in multiple tables ###########
+
+cal_quant <- function(x) {
+  quantiles <- quantile(x, c(0.25, 0.5, 0.75))
+  return(quantiles)
+}
+
+

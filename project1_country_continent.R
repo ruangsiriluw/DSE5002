@@ -3,7 +3,8 @@
 
 library(ggplot2)
 library(dplyr)
-
+library(gt)
+library(tidyr)
 
 project1_df <- read.csv("Project1/r project data.csv")
 
@@ -36,8 +37,9 @@ salary_ctn <- project1_df %>%
 summary(salary_ctn)
 
 
-
-###############  MAKE IQR SUMMARY TABLES BY CONTINENT AND EXP LEVEL ###################
+################################################################################
+################################################################################
+ ###################
 
 salary_ctn_iqr <- salary_ctn %>%
   group_by(continent, experience_level) %>%
@@ -101,7 +103,7 @@ salary_ctn %>%
         strip.text.y = element_text(size = 8, face = "bold")
   ) +
   scale_color_discrete(labels = c('Entry-level', 'Mid-level', 'Senior-level'
-                                  , 'Executive-level')) +
+                                  , 'Executive-level')) 
   
 
 
@@ -134,7 +136,7 @@ salary_ctn %>%
   ) 
 
 
-##### Plot salary distribution base by exp level of ALL:
+##### DENSITY Plot salary distribution base by exp level of ALL:
 
 salary_ctn %>%
   ggplot() +
