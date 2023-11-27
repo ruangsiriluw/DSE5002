@@ -70,16 +70,74 @@ salary_ctn_iqr_gt
 gtsave(salary_ctn_iqr_gt, "salary_ctn_iqr_gt.png")
 
 ###############################################################################
+############################################################################
+################## BOXPLOT break the salary range by COMPANY SIZE:
+############################################################################
+
+salary_ft_df %>%
+  ggplot(aes(x = company_size, y = salary_in_usd, color = company_size)) +
+  geom_boxplot() +
+  facet_grid ( ~ experience_level,
+               labeller = labeller(experience_level = explevel_labs)) + 
+  labs(title = stringr::str_wrap('Salary range comparison of experience levels
+                                 from different size of company'), 
+       x = 'Company Size',
+       y = 'Salary (USD)', col = 'Company Size: ') +
+  scale_y_continuous(labels = scales::dollar_format()) + 
+  theme(plot.title = element_text(size = 18, hjust = 0.5, vjust = 0), 
+        axis.title.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(size = 15),
+        axis.text.y = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        legend.title=element_text(size=13),
+        legend.position = 'bottom',
+        strip.text.x = element_text(size = 12, face = "bold")
+  ) +
+  scale_color_discrete(labels = c('Small (<50 employees)',
+                                  'Medium (50-250 employees)', 
+                                  'Large (>250 employees)')) +
+  geom_point(alpha = 0.4) 
+
+############################################################################
+################## BOXPLOT ALL the salary range by COMPANY Location:
+############################################################################
+salary_ft_df %>%
+  ggplot() +
+  geom_boxplot(aes(x = salary_in_usd, y = NULL, color = experience_level)) +
+  facet_grid (comp_continent.x~ experience_level) + 
+  labs(title = stringr::str_wrap('Salary range based on experience levels from
+                                 company located in each continent'), 
+       x = 'Salary (USD)', col = 'Experience Level: ') +
+  scale_x_continuous(labels = scales::dollar_format()) + 
+  theme(plot.title = element_text(size = 18, hjust = 0.5, vjust = 0), 
+        axis.title.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.text = element_text(size = 10),
+        legend.title=element_text(size=13),
+        legend.position = 'top',
+        strip.text.x = element_text(size = 10, face = "bold"),
+        strip.text.y = element_text(size = 10, face = "bold")
+  ) +
+  scale_color_discrete(labels = c('Entry-level', 'Mid-level', 'Senior-level'
+                                  , 'Executive-level'))
+
+##########################################################################
+##########################################################################
 
 
 
 
 
-#########################################################################################
 
 
 
 
+
+###################### DONOT need //////////////////////////////////////
 #################  BOXPLOT by continent and exp level ###################
 
 salary_ctn %>%

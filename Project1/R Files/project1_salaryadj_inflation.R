@@ -67,7 +67,7 @@ us_only_df$adj_salary <- adjust_for_inflation(salary_in_usd,
                        extrapolate_future_method = 'average',
                        future_averaging_period = 'all')
 
-############################  IQR of US and nonUS tables ##############
+############################  IQR of US ONLY tables ##############
 
 us_only_df$work_year <- as.character(us_only_df$work_year)
 
@@ -206,3 +206,42 @@ ds_us_only_df %>%
   
   scale_fill_manual(values = c("Nominal Salary" = "darkgrey", 
                                "Adjusted Salary" = "darkblue")) 
+
+
+
+###############################################################################
+##################  Slide 8:  Barplot of nominal vs adjust salary of data 
+### scientist-related titles in US location and residence by company size
+
+ds_us_only_df %>%
+  ggplot(aes(x = experience_level)) +
+  geom_bar(aes(y = adj_salary, fill = "Adjusted Salary"), 
+           position = position_dodge(width = 0.5), stat = "identity") +
+  
+  geom_bar(aes(y = salary_in_usd, fill = "Nominal Salary"), 
+           position = position_dodge(width = 0.5), stat = "identity") +
+  
+  facet_wrap( ~ company_size, 
+              labeller = labeller(company_size = compsize.labs))+
+  scale_y_continuous(labels = scales::dollar_format()) + 
+  labs(
+    title = "Comparing Salary Changes for Data Scientist-Related Titles Residing in the US
+Across Various Experience Levels and Company Size",
+    x = "Experience Level",
+    y = "Salary (USD)", fill = element_blank(),
+    caption = 'EN:Entry-level, MI:Mid-level, SE:Senior-level, EX:Executive-level') +
+  theme(plot.title = element_text(size = 14, hjust = 0.5, vjust = 0), 
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.position = 'right',
+        strip.text.x = element_text(size = 11, face = "bold"),
+        plot.caption = element_text(size = 8, hjust = 0.5)
+  ) +
+  
+  scale_fill_manual(values = c("Nominal Salary" = "darkgrey", 
+                               "Adjusted Salary" = "blue")) 
+
+
+#############################################################################
+
