@@ -1,0 +1,6 @@
+,timestamp,company,level,title,totalyearlycompensation,location,yearsofexperience,yearsatcompany,tag,basesalary,stockgrantvalue,bonus,gender,otherdetails,cityid,dmaid,rowNumber,Masters_Degree,Bachelors_Degree,Doctorate_Degree,Highschool,Some_College,Race_Asian,Race_White,Race_Two_Or_More,Race_Black,Race_Hispanic,Race,Education
+52222,5/23/21 21:00,Instacart,L9,Data Scientist,1000000,"San Francisco, CA",16,1,Data,300000,700000,0,Other,Title: Sr Director,7419,807,70827,0,0,0,0,0,0,0,0,0,0,,
+4204,2/8/19 10:53,eBay,Distinguished MTS,Data Scientist,900000,"San Jose, CA",12,2,ML / AI,300000,250000,350000,Male,,7422,807,5737,0,0,0,0,0,0,0,0,0,0,,
+60394,8/5/21 15:05,Microsoft,66,Data Scientist,757000,"Mountain View, CA",5,0,"ML, AI",255000,420000,82000,,Title: Principal Data Scientist,7322,807,81832,0,0,0,0,0,0,0,0,0,0,,
+46211,3/26/21 21:11,Facebook,IC7,Data Scientist,740000,"Menlo Park, CA",10,4,General,270000,400000,70000,Male,"Title: Research Data Science, Race: Asian, Academic Level: Doctorate (PhD)",7300,807,63056,0,0,1,0,0,1,0,0,0,0,Asian,PhD
+62142,8/25/19 15:17,Amazon,L7,Data Scientist,740000,"Seattle, WA",12,7,ML / AI,160000,430000,0,,,11527,819,13677,0,0,0,0,0,0,0,0,0,0,,
